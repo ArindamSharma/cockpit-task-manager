@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="addon">
+  <id>org.cockpit_project.task_manager</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <name>Task Manager</name>
+  <summary>A real-time Task Manager system monitor plugin for the Cockpit web console</summary>
+  <description>
+    <p>
+      A real-time, Task Manager–style system monitor plugin for the Cockpit
+      web console. It provides a single-page view of system resource usage
+      and running processes, giving Linux administrators an intuitive way
+      to monitor and manage their servers directly from the browser.
+    </p>
+  </description>
+  <extends>org.cockpit_project.cockpit</extends>
+  <launchable type="cockpit-manifest">task-manager</launchable>
+  <url type="homepage">https://github.com/ArindamSharma/cockpit-task-manager</url>
+  <url type="bugtracker">https://github.com/ArindamSharma/cockpit-task-manager/issues</url>
+  <update_contact>cockpit-devel_AT_lists.fedorahosted.org</update_contact>
+  <developer id="org.cockpit-project">
+    <name>Cockpit Project</name>
+  </developer>
+</component>

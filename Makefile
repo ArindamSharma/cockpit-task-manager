@@ -32,7 +32,7 @@ COCKPIT_REPO_FILES = \
 	tools/node-modules \
 	$(NULL)
 
-COCKPIT_REPO_URL = https://github.com/cockpit-project/cockpit.git
+COCKPIT_REPO_URL = https://github.com/ArindamSharma/cockpit-task-manager.git
 COCKPIT_REPO_COMMIT = d954dac9bac5ea7e12aeebb44f0e1a4ee64ee8c2 # 356 + 5 commits
 
 $(COCKPIT_REPO_FILES): $(COCKPIT_REPO_STAMP)
@@ -96,6 +96,8 @@ clean:
 	rm -f $(SPEC) packaging/arch/PKGBUILD
 	rm -f po/LINGUAS
 	rm -f metafile.json runtime-npm-modules.txt
+	rm -rf $(DEB_STAGING)
+	rm -f $(DEB_PKG)
 
 install: $(DIST_TEST) po/LINGUAS
 	mkdir -p $(DESTDIR)$(PREFIX)/share/cockpit/$(PACKAGE_NAME)
@@ -137,6 +139,36 @@ $(NODE_CACHE): $(NODE_MODULES_TEST)
 	tools/node-modules runtime-tar $(NODE_CACHE)
 
 node-cache: $(NODE_CACHE)
+
+# convenience target for building a .deb package for Debian/Ubuntu
+DEB_STAGING=deb-staging
+DEB_PKG=$(RPM_NAME)_$(VERSION).deb
+
+deb: $(DIST_TEST) po/LINGUAS
+	mkdir -p "`pwd`/$(DEB_STAGING)/DEBIAN"
+	mkdir -p "`pwd`/$(DEB_STAGING)/usr/share/cockpit/$(PACKAGE_NAME)"
+	mkdir -p "`pwd`/$(DEB_STAGING)/usr/share/metainfo"
+	cp -r dist/* "`pwd`/$(DEB_STAGING)/usr/share/cockpit/$(PACKAGE_NAME)"
+	if command -v msgfmt >/dev/null 2>&1 && [ -s po/LINGUAS ]; then \
+		msgfmt --xml -d po \
+			--template $(APPSTREAMFILE) \
+			-o "`pwd`/$(DEB_STAGING)/usr/share/metainfo/$(APPSTREAMFILE)"; \
+	else \
+		cp $(APPSTREAMFILE) "`pwd`/$(DEB_STAGING)/usr/share/metainfo/$(APPSTREAMFILE)"; \
+	fi
+	printf '%s\n' \
+		'Package: $(RPM_NAME)' \
+		'Version: $(VERSION)' \
+		'Architecture: all' \
+		'Maintainer: Cockpit Task Manager Contributors' \
+		'Depends: cockpit-bridge' \
+		'Section: admin' \
+		'Priority: optional' \
+		'Description: Cockpit Task Manager Module' \
+		' A real-time Task Manager system monitor plugin for the Cockpit web console.' \
+		> "`pwd`/$(DEB_STAGING)/DEBIAN/control"
+	dpkg-deb --build "`pwd`/$(DEB_STAGING)" "`pwd`/$(DEB_PKG)"
+	find `pwd` -maxdepth 1 -name '*.deb' -printf '%f\n'
 
 # convenience target for developers
 srpm: $(TARFILE) $(NODE_CACHE) $(SPEC)
@@ -200,4 +232,4 @@ $(NODE_MODULES_TEST): package.json
 	for _ in `seq 3`; do timeout 10m env -u NODE_ENV npm install --ignore-scripts && exit 0; done; exit 1
 	env -u NODE_ENV npm prune
 
-.PHONY: all clean install devel-install devel-uninstall print-version dist node-cache rpm prepare-check check vm print-vm
+.PHONY: all clean install devel-install devel-uninstall print-version dist node-cache rpm deb prepare-check check vm print-vm

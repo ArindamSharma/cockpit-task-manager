@@ -9,11 +9,11 @@ import { createRoot } from 'react-dom/client';
 
 import "cockpit-dark-theme";
 
-import { Application } from './app.jsx';
+import { TaskManager } from './task-manager';
 
 import "patternfly/patternfly-6-cockpit.scss";
-import './app.scss';
+import './task-manager.scss';
 
 document.addEventListener("DOMContentLoaded", () => {
-    createRoot(document.getElementById("app")!).render(<Application />);
+    createRoot(document.getElementById("task-manager")!).render(<TaskManager />);
 });

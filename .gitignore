@@ -14,11 +14,13 @@
 /Test*.log
 /Test*.log.gz
 /Test*.png
+/*.deb
 /*.whl
 /bots
 /cockpit-*.spec
 /cockpit-*.tar.xz
 /cockpit-navigator.spec
+/deb-staging/
 /dist/
 /metafile.json
 /package-lock.json
